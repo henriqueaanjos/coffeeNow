@@ -6,9 +6,18 @@ interface ContainerProps{
 
 export const Container = styled.div<ContainerProps>`
     width: 100%;
-    height: 100vh ;
+    height: 100%;
     background-image: url(${({img}) => img});
     background-size: cover;
+`;
+
+export const CenterDiv = styled.div`
+    width: 100%;
+    height: 100%;
+   
+   display: flex;
+   align-items: center;
+   justify-content: center;
 `;
 
 export const Content = styled.div`

@@ -13,25 +13,27 @@ import {
 export default function Home() {
   const theme = useTheme();
   return (
-    <Container img='/background.png'>
-      <Content>
-        <Title>
-          Do you like good
-        </Title>
-        <Line>
-          <TitleLogo>Coffee</TitleLogo>
+    <div style={{height: '100vh'}}>
+      <Container img='/background.png'>
+        <Content>
           <Title>
-            ?
+            Do you like good
           </Title>
-        </Line>
-        <SubTitle>
-          So, Welcome to right place! 
-        </SubTitle>
-        <Button 
-          title='Order Now' 
-          color={theme.colors.red._900}
-        />
-      </Content>
-    </Container>
+          <Line>
+            <TitleLogo>Coffee</TitleLogo>
+            <Title>
+              ?
+            </Title>
+          </Line>
+          <SubTitle>
+            So, Welcome to right place! 
+          </SubTitle>
+          <a href='/order'><Button 
+            title='Order Now' 
+            color={theme.colors.red._900}
+          /></a>
+        </Content>
+      </Container>
+    </div>
   )
 }

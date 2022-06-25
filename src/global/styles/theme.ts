@@ -1,5 +1,7 @@
 export default {
     colors: {
+        primary: 'rgba(153, 88, 42, 0.8)',
+        secundary: '#F0CEA0',
         red:{
             _500: '#E24250',
             _900: '#6F1D1B'
