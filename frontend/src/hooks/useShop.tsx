@@ -1,4 +1,5 @@
 import { useContext, createContext, ReactNode, useState, useEffect } from 'react';
+import { api } from '../services/api';
 import { sizeCoffee, typeCoffee } from '../utils/typeCoffee';
 
 interface ShopContextProps{
@@ -6,8 +7,8 @@ interface ShopContextProps{
 }
 
 interface Item{
-    idType: number,
-    idSize: number,
+    typeCoffeeId: number,
+    sizeCoffeeId: number,
     quantity: number
 }
 
@@ -28,8 +29,8 @@ export function ShopProvider({ children }: ShopContextProps){
     const tokenKey = '@coffeeNow:itens';
 
     function calculateTotal(product: Item){
-        const typePrice = typeCoffee.find(item => item.id === product.idType).price;
-        const sizePrice = sizeCoffee.find(item => item.id === product.idSize).price;
+        const typePrice = typeCoffee.find(item => item.id === product.typeCoffeeId).price;
+        const sizePrice = sizeCoffee.find(item => item.id === product.sizeCoffeeId).price;
         return (typePrice + sizePrice) * product.quantity;
       }
 
@@ -41,7 +42,14 @@ export function ShopProvider({ children }: ShopContextProps){
     }
 
     async function finish(){
-
+        const products = itens.map(item => item);
+        await api.post('/sale', {
+            products
+        });
+        setItens([]);
+        setQuantityItens(0);
+        setTotal(0);
+        await localStorage.removeItem(tokenKey);
     }
     
     useEffect(() => {
@@ -52,7 +60,7 @@ export function ShopProvider({ children }: ShopContextProps){
             }
         }
         loadToken();
-        // localStorage.removeItem(tokenKey);
+        
     }, []);
 
     return(

@@ -1,11 +1,12 @@
 import { useRouter } from "next/router";
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { useTheme } from "styled-components";
 import { Button } from "../../components/Button";
 import Header from "../../components/Header/Header";
 import { NamePrice } from "../../components/NamePrice";
 import QuantitySelector from "../../components/QuantitySelector";
 import { useShop } from "../../hooks/useShop";
+import { api } from "../../services/api";
 import { previewMockup } from "../../services/previewMockup";
 import { sizeCoffee, typeCoffee } from "../../utils/typeCoffee";
 
@@ -34,6 +35,9 @@ import {
 const OrderPage = () => {
   const [selectedTypeCoffee, setSelectedTypeCoffee] = useState<typeof typeCoffee[0]>(typeCoffee[0]);
   const [selectedSizeCoffee, setSelectedSizeCoffee] = useState<typeof sizeCoffee[0]>(sizeCoffee[0]);
+  const [typeData, setTypeData] = useState<typeof typeCoffee>([]);
+  const [sizeData, setSizeData] = useState<typeof sizeCoffee>([]);
+
   const [quantity, setQuantity] = useState(1);
 
   const theme = useTheme();
@@ -63,8 +67,8 @@ const OrderPage = () => {
 
   function addToCart(){
     const product = {
-      idType: selectedTypeCoffee.id,
-      idSize: selectedSizeCoffee.id,
+      typeCoffeeId: selectedTypeCoffee.id,
+      sizeCoffeeId: selectedSizeCoffee.id,
       quantity
     }
     addItem(product);
@@ -73,6 +77,17 @@ const OrderPage = () => {
   function goToCart(){
     route.push('/products')
   }
+
+  async function getData(){
+    const types = await api.get('/types');
+    const sizes = await api.get('/sizes');
+    setTypeData(types.data);
+    setSizeData(sizes.data);
+  }
+
+  useEffect(() => {
+    getData();
+  }, []) 
 
   return(
     <Container>
@@ -85,7 +100,7 @@ const OrderPage = () => {
           <PricingTable>
             <CoffeeTypes>
               {
-                typeCoffee.map(type => 
+                typeData.map(type => 
                   <Types key={type.id}>
                     <Value>{type.title}</Value>
                     <Value>U$ {type.price}.00</Value>
@@ -96,9 +111,9 @@ const OrderPage = () => {
             </CoffeeTypes>
             <CoffeeTypes>
               {
-                sizeCoffee.map(size => 
+                sizeData.map(size => 
                   <Types key={size.id}>
-                    <Value>{size.title} ({size.size}Ml)</Value>
+                    <Value>{size.title} ({size.size})</Value>
                     <Value>{size.price === 0 ? 'Incluse' : '+U$ '+size.price+'.00'}</Value>
                   </Types>  
                 )
@@ -111,7 +126,7 @@ const OrderPage = () => {
               onChange={ e => handleSelectTypeCoffee(e.target.value)}
             >
               {
-                typeCoffee.map(type => 
+                typeData.map(type => 
                   <CoffeeOptions value={type.id} key={type.id}>
                     {type.title}
                   </CoffeeOptions>  
@@ -123,7 +138,7 @@ const OrderPage = () => {
               onChange={ e => handleSelectSizeCoffee(e.target.value)}
             >
               {
-                sizeCoffee.map(size => 
+                sizeData.map(size => 
                   <CoffeeOptions value={size.id} key={size.id}>
                     {size.title}
                   </CoffeeOptions>

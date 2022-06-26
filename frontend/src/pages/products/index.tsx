@@ -1,8 +1,10 @@
+import { useRouter } from "next/router";
 import { useTheme } from "styled-components";
 import { Button } from "../../components/Button";
 import Header from "../../components/Header/Header"
 import ProductCard from "../../components/ProductCard";
 import { useShop } from "../../hooks/useShop";
+import { api } from "../../services/api";
 import { 
   Container, 
   Title,
@@ -17,7 +19,17 @@ import {
 const Products = () => {
 
   const theme = useTheme();
-  const { itens, total} = useShop();
+  const { itens, total, finish} = useShop();
+  const route = useRouter();
+
+  async function finishSale(){
+    try{
+      await finish();
+    }catch{
+      alert('Não foi possível processar sua informação nesse momento, Tente Novamente mais tarde!')
+    }
+    route.push('/');
+  }
 
   return (
     <Container>
@@ -27,7 +39,7 @@ const Products = () => {
         <ProductsCards>
           {
             itens.map((item, index) => 
-              <ProductCard key={index} idType={item.idType} idSize={item.idSize} quantity={item.quantity}/>
+              <ProductCard key={index} idType={item.typeCoffeeId} idSize={item.sizeCoffeeId} quantity={item.quantity}/>
             )
           }
         </ProductsCards>
@@ -37,7 +49,13 @@ const Products = () => {
             <TotalTitle>Total:</TotalTitle>
             <TotalValue>U$ {total}.00</TotalValue>
           </Total>
-          <Button title="Buy Now" color={theme.colors.red._900} textSize="1.5rem" size="25rem"/>
+          <Button 
+            title="Buy Now" 
+            color={theme.colors.red._900} 
+            textSize="1.5rem" 
+            size="25rem"
+            onClick={finishSale}
+          />
         </Footer>
       </Content>
     </Container>
