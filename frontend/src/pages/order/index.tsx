@@ -29,7 +29,7 @@ import {
   PreviewContainer,
   HalfDiv,
   Preview
- } from "./styles";
+ } from "../../styles/order";
 
 
 const OrderPage = () => {

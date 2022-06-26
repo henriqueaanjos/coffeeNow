@@ -14,7 +14,7 @@ import {
   Total,
   TotalTitle,
   TotalValue,
-} from "./styles";
+} from "../../styles/products";
 
 const Products = () => {
 
