@@ -1,141 +1,168 @@
-import styled from "styled-components";
+import { useRouter } from "next/router";
+import { FormEvent, useState } from "react";
+import { useTheme } from "styled-components";
+import { Button } from "../../components/Button";
 import Header from "../../components/Header/Header";
 import { NamePrice } from "../../components/NamePrice";
-import { CenterDiv, Container } from "../../styles";
+import QuantitySelector from "../../components/QuantitySelector";
+import { useShop } from "../../hooks/useShop";
+import { previewMockup } from "../../services/previewMockup";
+import { sizeCoffee, typeCoffee } from "../../utils/typeCoffee";
 
-const HalfDiv = styled.div`
-  height: 100%;
-  width: 50%;
-  background-color: lightcyan;
-`;
+import {
+  Container, 
+  Content,
+  Title,
+  PricingTable,
+  PricingTitle,
+  CoffeeTypes,
+  Types,
+  Value,
+  Form,
+  CoffeSelect,
+  CoffeeOptions,
+  Total,
+  TotalTitle,
+  TotalValue,
+  Options,
+  PreviewContainer,
+  HalfDiv,
+  Preview
+ } from "./styles";
+
 
 const OrderPage = () => {
-  return(
-    <div style={{height: '100vh'}}>
-     
-      <Header />
-     
-      <div 
-        style={{
-          display: 'flex', 
-          flexDirection: 'row', 
-          height: '90%'
-        }}
-      >{/* content */}
-        <HalfDiv>{/* order */}
-          <div
-            style={{
-              padding: '20px'
-            }}
-          >
-            <h1 style={{textAlign: 'center'}}>WHAT DO YOU WANT TODAY ?</h1>
-            <h5>Pricing</h5>
-            <div
-              style={{
-                display: 'flex',
-                paddingTop: '30px'
-              }}
-            >
-              <HalfDiv>
-                <NamePrice name="EXPRESS" price='U$ 2.00'/>
-                <NamePrice name="LATE" price='U$ 3.00'/>
-                <NamePrice name="CAPPUCCINO" price='U$ 5.00'/>
-                <NamePrice name="MOCHA" price='U$ 7.00'/>
-              </HalfDiv>
-              <HalfDiv>
-                <NamePrice name="SMALL (150ML)" price="INCLUSE" />
-                <NamePrice name="MEDIUM (300ML)" price="+ U$ 1.00" />
-                <NamePrice name="LARGER (500ML)" price="+ U$ 3.00" />
-              </HalfDiv>
-            </div>
-            <div
-              style={{
-                display: 'flex',
-                padding: '20px'
-              }}
-            >
-              <HalfDiv>
-                <select
-                  style={{
-                    width: '90%'
-                  }}
-                >
-                  <option value="EXPRESS">EXPRESS</option>
-                  <option value="LATE">LATE</option>
-                  <option value="CAPPUCCINO">CAPPUCCINO</option>
-                  <option value="MOCHA">MOCHA</option>
-                </select>
-              </HalfDiv>
-              <HalfDiv
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between'
-                }}
-              >
-                <select
-                  style={{
-                    width: '60%'
-                  }}
-                >
-                  <option value="SMALL">SMALL</option>
-                  <option value="MEDIUM">MEDIUM</option>
-                  <option value="LARGER">LARGER</option>
-                </select>
-                <input type="number" min={0} max={100}/>
-              </HalfDiv>
-            </div>
-            <div
-              style={{
-                display: 'flex'
-              }}
-            >
-              <HalfDiv>
-                <h1>TOTAL:</h1>
-              </HalfDiv>
-              <HalfDiv
-                style={{
-                  textAlign: 'end'
-                }}
-              >
-                <h1>U$ 5.00</h1>
-              </HalfDiv>
-            </div>
-            <div
-              style={{
-                display: 'flex',
-                padding: '20px'
-              }}
-            >
-              <div
-                style={{
-                  width: '60%',
-                }}
-              >
-                <button>Add to Cart</button>
-              </div>
-              <div>
-                <button>Go to Cart</button>
-              </div>
-            </div>
-          </div>
+  const [selectedTypeCoffee, setSelectedTypeCoffee] = useState<typeof typeCoffee[0]>(typeCoffee[0]);
+  const [selectedSizeCoffee, setSelectedSizeCoffee] = useState<typeof sizeCoffee[0]>(sizeCoffee[0]);
+  const [quantity, setQuantity] = useState(1);
 
+  const theme = useTheme();
+  const route = useRouter();
+  const { quantityItens, addItem } = useShop();
+
+  function calculateTotal(){
+    const total = (selectedTypeCoffee.price + selectedSizeCoffee.price) * quantity;
+    return "U$ "+ total+ '.00';
+  }
+
+  function handleSelectTypeCoffee(id: string){
+    const typeC = typeCoffee.find(type => type.id === Number(id));
+    if(typeC)
+      setSelectedTypeCoffee(typeC);
+  }
+
+  function handleSelectSizeCoffee(id: string){
+    const sizeC = sizeCoffee.find(size => size.id === Number(id));
+    if(sizeC)
+      setSelectedSizeCoffee(sizeC);
+  }
+
+  function handleSubmit(e: FormEvent){
+    e.preventDefault();
+  }
+
+  function addToCart(){
+    const product = {
+      idType: selectedTypeCoffee.id,
+      idSize: selectedSizeCoffee.id,
+      quantity
+    }
+    addItem(product);
+  }
+
+  function goToCart(){
+    route.push('/products')
+  }
+
+  return(
+    <Container>
+      <Header />
+
+      <Content>{/* content */}
+        <HalfDiv>
+          <Title>WHAT DO YOU WANT TODAY ?</Title>
+          <PricingTitle>Pricing</PricingTitle>
+          <PricingTable>
+            <CoffeeTypes>
+              {
+                typeCoffee.map(type => 
+                  <Types key={type.id}>
+                    <Value>{type.title}</Value>
+                    <Value>U$ {type.price}.00</Value>
+                  </Types>
+                )
+              }
+              
+            </CoffeeTypes>
+            <CoffeeTypes>
+              {
+                sizeCoffee.map(size => 
+                  <Types key={size.id}>
+                    <Value>{size.title} ({size.size}Ml)</Value>
+                    <Value>{size.price === 0 ? 'Incluse' : '+U$ '+size.price+'.00'}</Value>
+                  </Types>  
+                )
+              }
+            </CoffeeTypes>
+          </PricingTable>
+          <Form onSubmit={handleSubmit}>
+            <CoffeSelect 
+              width="70%"
+              onChange={ e => handleSelectTypeCoffee(e.target.value)}
+            >
+              {
+                typeCoffee.map(type => 
+                  <CoffeeOptions value={type.id} key={type.id}>
+                    {type.title}
+                  </CoffeeOptions>  
+                )
+              }
+            </CoffeSelect>
+            <CoffeSelect 
+              width="30%"
+              onChange={ e => handleSelectSizeCoffee(e.target.value)}
+            >
+              {
+                sizeCoffee.map(size => 
+                  <CoffeeOptions value={size.id} key={size.id}>
+                    {size.title}
+                  </CoffeeOptions>
+                )
+              }
+            </CoffeSelect>
+            <QuantitySelector value={quantity} setValue={setQuantity}/>
+          </Form>
+          
+          <Total>
+            <TotalTitle>Total:</TotalTitle>
+            <TotalValue>{calculateTotal()}</TotalValue>
+          </Total>
+          <Options>
+            <Button 
+              title={`Add to Cart (${quantityItens})`}
+              color={theme.colors.red._900} 
+              size="70%"
+              textSize="1.5rem"
+              onClick={addToCart}
+            />
+            <Button 
+              title="Go to Cart" 
+              color={theme.colors.brow._200} 
+              size="30%"
+              textSize="1.5rem"
+              onClick={goToCart}
+            />
+          </Options>
+          
         </HalfDiv>
-        <HalfDiv>{/* image */}
-          <Container img="/background.png">
-            <CenterDiv>
-              <div
-                style={{
-                  height: '500px',
-                  width: '300px'
-                }}
-              >
-                <Container img="/Mocha%20Sm.png"/>
-              </div>
-            </CenterDiv>
-          </Container>
+        <HalfDiv>
+          <PreviewContainer>
+            <Preview src={`/${previewMockup(selectedTypeCoffee.title, selectedSizeCoffee.title)}`}  alt={previewMockup(selectedTypeCoffee.title, selectedSizeCoffee.title)}/>
+          </PreviewContainer>
         </HalfDiv>
-      </div>
-    </div>
+      </Content>
+      
+    </Container>
   )
 }
 

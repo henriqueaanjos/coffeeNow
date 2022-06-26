@@ -1,10 +1,16 @@
 import styled from 'styled-components';
 
 interface ButtonProps{
-    color: string
+    color: string,
+    size?: string
 }
 
-export const Container = styled.button`
+interface TitleProps{
+    textSize?: string
+}
+
+export const Container = styled.button<ButtonProps>`
+    width:  ${({ size }) => size};
     background-color:  ${({ color }) => color};
 
     padding: 0.5rem;
@@ -12,8 +18,8 @@ export const Container = styled.button`
     border-radius: 5px;
 `;
 
-export const Title = styled.h1`
+export const Title = styled.h1<TitleProps>`
     font-family:  ${({ theme }) => theme.fonts.secondary};
-    font-size: 0.825rem;
+    font-size:  ${({ textSize }) => textSize ? textSize : '0.825rem'};
     color:  ${({ theme }) => theme.colors.basic.white}
 `;

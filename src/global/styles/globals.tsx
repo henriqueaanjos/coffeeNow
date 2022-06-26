@@ -49,7 +49,6 @@ export const GlobalStyleConfig =  createGlobalStyle`
             cursor: pointer
         }
     }
-
 `;
 
 export const GlobalStyle = ({ children }: { children: any }) => {

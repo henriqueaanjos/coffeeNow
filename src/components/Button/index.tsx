@@ -8,13 +8,15 @@ import {
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>{
     title: string,
-    color: string
+    color: string,
+    size?: string,
+    textSize?: string
 }
 
-export const Button = ({title, color, ...rest}: ButtonProps) => {
+export const Button = ({title, color, size, textSize, ...rest}: ButtonProps) => {
     return(
-        <Container {...rest} color={color}>
-            <Title>{title}</Title>
+        <Container {...rest} color={color} size={size}>
+            <Title textSize={textSize}>{title}</Title>
         </Container>
     );
 }

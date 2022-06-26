@@ -1,66 +1,76 @@
-import styled from "styled-components";
+import { 
+  Container,
+  Preview,
+  PreviewWrapper,
+  Info,
+  InfoProduct,
+  Type,
+  Size,
+  Total,
+  TotalTitle,
+  TotalValue,
+  Quantity,
+ } from "./styles";
 
-interface Props{
-  type: string,
-  size: string,
-  amount: number,
-  image: string
+ import { typeCoffee, sizeCoffee} from '../../utils/typeCoffee';
+ import { previewMockup } from '../../services/previewMockup';
+import { useState } from "react";
+import { useEffect } from "react";
+
+ interface ProductCardProps{
+  idType: number,
+  idSize: number,
+  quantity: number
 }
 
-interface ImageProps{
-  img: string
-}
 
-const ImageDiv = styled.div<ImageProps>`
-  height: 70px;
-  width: 50px;
-  background-image: url(${({img}) => img});
-  background-size: contain;
-  background-repeat: no-repeat;
-`;
+const ProductCard = ({idType, idSize, quantity}: ProductCardProps) => {
+  const [type, setType] = useState('');
+  const [size, setSize] = useState('');
 
-const ProductCard = (props: Props) => {
+  function calculateTotal(){
+    const typePrice = typeCoffee.find(item => item.id === idType).price;
+    const sizePrice = sizeCoffee.find(item => item.id === idSize).price;
+    return (typePrice + sizePrice) * quantity;
+  }
+
+  useEffect(() => {
+    const typeTitle = typeCoffee.find(item => item.id === idType);
+    if(typeTitle){
+      setType(typeTitle.title);
+    }
+    const sizeTitle = sizeCoffee.find(item => item.id === idSize);
+    if(sizeTitle){
+      setSize(sizeTitle.title);
+    }
+  }, [])
+
   return (
-    <div
-      style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        padding: '30px'
-      }}
-    >
-      <div>
-        <ImageDiv img={props.image}/>
-      </div>
-      <div
-        style={{
-          padding: '10px'
-        }}
-      >
-        <h4>
-          {props.type}
-        </h4>
-        <h4>
-          {props.size}
-        </h4>
-        <h5>
-          Total
-        </h5>
-      </div>
-      <div
-        style={{
-          textAlign: 'center',
-          padding: '10px'
-        }}
-      >
-        <h1>
-          {props.amount}
-        </h1>
-        <h5>
-          U$ 10.00
-        </h5>
-      </div>
-    </div>
+    <Container>
+      <PreviewWrapper type={idType}>
+        <Preview src={previewMockup(type, size)}/>
+      </PreviewWrapper>
+      <Info>
+        <InfoProduct>
+          <div>
+            <Type>{type}</Type>
+            <Size>{size}</Size>
+          </div>
+          <Quantity>
+            {quantity}
+          </Quantity>
+          
+        </InfoProduct>
+        <Total>
+          <TotalTitle>
+            Total
+          </TotalTitle>
+          <TotalValue>
+            U$ {calculateTotal()}.00
+          </TotalValue>
+        </Total>
+      </Info>
+    </Container>
   )
 }
 

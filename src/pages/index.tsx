@@ -1,5 +1,7 @@
+import Link from 'next/link';
 import { useTheme } from 'styled-components';
 import { Button } from '../components/Button';
+import Header from '../components/Header/Header';
 import {
   Container,
   Content,
@@ -15,6 +17,7 @@ export default function Home() {
   return (
     <div style={{height: '100vh'}}>
       <Container img='/background.png'>
+        <Header />
         <Content>
           <Title>
             Do you like good
@@ -28,10 +31,10 @@ export default function Home() {
           <SubTitle>
             So, Welcome to right place! 
           </SubTitle>
-          <a href='/order'><Button 
+          <Link href='/order'><Button 
             title='Order Now' 
             color={theme.colors.red._900}
-          /></a>
+          /></Link>
         </Content>
       </Container>
     </div>
